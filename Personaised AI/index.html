@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="true">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SoulMentor">
+  <meta name="theme-color" content="#090714">
+  <title>SoulMentor — Your Personal Growth Companion</title>
+  <meta name="description" content="A beautiful 3D-inspired personalized AI companion to heal, grow, and build self-respect.">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <!-- Performance: Optimize font loading -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient Particle Background -->
+  <canvas id="bg-particles"></canvas>
+  <div class="ambient-glow"></div>
+
+  <!-- In-App Notification Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Main App Layout -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar glass-panel">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+        </div>
+        <h1 class="brand-name" data-i18n="app.title">SoulMentor</h1>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tab="chat">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span data-i18n="nav.chat">Chat</span>
+        </button>
+        <button class="nav-btn" data-tab="wisdom">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span data-i18n="nav.wisdom">Wisdom</span>
+        </button>
+        <button class="nav-btn" data-tab="tasks">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          <span data-i18n="nav.tasks">Tasks</span>
+          <span class="badge" id="task-badge" style="display:none;">0</span>
+        </button>
+        <button class="nav-btn" data-tab="reminders">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span data-i18n="nav.reminders">Reminders</span>
+        </button>
+        <button class="nav-btn" data-tab="journal">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span data-i18n="nav.journal">Journal</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <!-- Language Selector -->
+        <div class="lang-selector-container">
+          <select id="lang-select" class="glass-input">
+            <option value="en">🇬🇧 English</option>
+            <option value="hi">🇮🇳 हिन्दी</option>
+            <option value="bn">🇧🇩 বাংলা</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Viewport -->
+    <main class="content-viewport">
+      
+      <!-- Top Bar (Mobile menu & Title indicator) -->
+      <header class="top-bar glass-panel">
+        <button class="mobile-menu-toggle" id="menu-toggle">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div class="top-bar-title">
+          <h2 id="view-title">SoulMentor</h2>
+        </div>
+        <div class="top-bar-actions">
+          <!-- Active Mood Indicator -->
+          <div class="mood-glow-indicator" id="mood-dot" title="Ambient mood"></div>
+        </div>
+      </header>
+
+      <!-- Views Container -->
+      <div class="views-wrapper">
+        
+        <!-- ================= CHAT VIEW ================= -->
+        <section class="app-view active" id="view-chat">
+          <div class="chat-container">
+            <div class="chat-messages" id="chat-messages-container">
+              <!-- Dynamically populated messages -->
+            </div>
+            
+            <!-- Voice Waveform overlay when recording -->
+            <div class="voice-overlay" id="voice-overlay" style="display: none;">
+              <div class="waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+              </div>
+              <p class="voice-text" data-i18n="chat.recording">Recording... tap to stop</p>
+            </div>
+
+            <!-- Chat Input Panel -->
+            <div class="chat-input-panel glass-panel">
+              <button class="chat-icon-btn" id="voice-btn" title="Speak to SoulMentor">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </button>
+              
+              <textarea class="chat-input" id="chat-input-field" data-i18n-placeholder="chat.placeholder" placeholder="Share what's on your mind..."></textarea>
+              
+              <button class="chat-icon-btn" id="tts-toggle" title="Toggle Text-to-Speech (Auto read)">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" id="tts-icon">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              </button>
+              
+              <button class="send-btn" id="send-btn" title="Send message">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= WISDOM VIEW ================= -->
+        <section class="app-view" id="view-wisdom">
+          <div class="wisdom-view-container">
+            <div class="wisdom-header">
+              <h3 data-i18n="wisdom.title">Wisdom Library</h3>
+              <p class="subtitle" data-i18n="wisdom.subtitle">Curated quotes from the greatest minds</p>
+              
+              <!-- Topic Filters -->
+              <div class="filters-container" id="wisdom-filters">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+            
+            <div class="quotes-grid" id="quotes-grid-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= TASKS VIEW ================= -->
+        <section class="app-view" id="view-tasks">
+          <div class="tasks-view-container">
+            <div class="tasks-dashboard glass-panel">
+              <div class="streak-counter">
+                <div class="streak-number" id="streak-count">0</div>
+                <div class="streak-label" data-i18n="tasks.streak">Day Streak</div>
+              </div>
+              <div class="tasks-progress">
+                <div class="progress-ring-container">
+                  <svg width="80" height="80">
+                    <circle class="progress-ring-circle-bg" stroke="rgba(255,255,255,0.1)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                    <circle id="tasks-progress-circle" class="progress-ring-circle" stroke="url(#gradient-accent)" stroke-width="6" fill="transparent" r="34" cx="40" cy="40"/>
+                    <defs>
+                      <linearGradient id="gradient-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#9b59b6" />
+                        <stop offset="100%" stop-color="#ff6b81" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <span class="progress-percent" id="tasks-percent">0%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task Input Form -->
+            <form class="task-form glass-panel" id="task-add-form">
+              <input type="text" id="task-input" class="glass-input" data-i18n-placeholder="tasks.placeholder" placeholder="What do you want to work on today?" required>
+              <select id="task-category-select" class="glass-input">
+                <option value="growth">💡 Growth</option>
+                <option value="selfCare">🧘 Self-Care</option>
+                <option value="social">🤝 Social</option>
+                <option value="health">💧 Health</option>
+              </select>
+              <button type="submit" class="primary-btn" data-i18n="tasks.add">Add Task</button>
+            </form>
+
+            <div class="tasks-content-split">
+              <!-- Active Tasks List -->
+              <div class="tasks-list-section glass-panel">
+                <h4 data-i18n="nav.tasks">Tasks</h4>
+                <div class="tasks-list" id="active-tasks-list">
+                  <!-- Dynamic Tasks -->
+                </div>
+              </div>
+
+              <!-- Suggested Tasks -->
+              <div class="tasks-suggestions-section glass-panel">
+                <h4 data-i18n="tasks.empty">Suggestions</h4>
+                <div class="suggestions-list" id="suggested-tasks-list">
+                  <!-- Dynamic suggestions from i18n -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= REMINDERS VIEW ================= -->
+        <section class="app-view" id="view-reminders">
+          <div class="reminders-view-container">
+            <div class="reminders-header-panel glass-panel">
+              <div class="reminders-title-area">
+                <h3 data-i18n="reminders.title">Daily Reminders</h3>
+                <p data-i18n="reminders.subtitle">Gentle nudges for your well-being</p>
+              </div>
+              <button class="primary-btn" id="enable-notifications-btn" data-i18n="reminders.notificationPermission">
+                Enable System Notifications
+              </button>
+            </div>
+
+            <!-- Reminder Add Form -->
+            <form class="reminder-form glass-panel" id="reminder-add-form">
+              <input type="time" id="reminder-time" class="glass-input" required>
+              <input type="text" id="reminder-text" class="glass-input" data-i18n-placeholder="reminders.textPlaceholder" placeholder="Reminder text..." required>
+              <button type="submit" class="primary-btn" data-i18n="reminders.add">Add Reminder</button>
+            </form>
+
+            <div class="reminders-content-split">
+              <!-- Active Reminders -->
+              <div class="reminders-list-section glass-panel">
+                <h4 data-i18n="nav.reminders">Reminders</h4>
+                <div class="reminders-list" id="active-reminders-list">
+                  <!-- Dynamic -->
+                </div>
+              </div>
+
+              <!-- Self-Care Templates -->
+              <div class="reminders-templates-section glass-panel">
+                <h4>Quick Templates</h4>
+                <div class="templates-grid" id="reminder-templates-list">
+                  <!-- Dynamic -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= JOURNAL VIEW ================= -->
+        <section class="app-view" id="view-journal">
+          <div class="journal-view-container">
+            <div class="journal-dashboard-grid">
+              
+              <!-- Mood Trends Card -->
+              <div class="journal-stats-card glass-panel">
+                <h4 data-i18n="journal.moodTrend">Mood Trend</h4>
+                <div class="mood-bar-container" id="mood-stats-bars">
+                  <!-- Dynamic progress bars -->
+                </div>
+              </div>
+
+              <!-- Growth Moments Card -->
+              <div class="journal-growth-card glass-panel">
+                <h4 data-i18n="journal.growthMoments">Growth Moments</h4>
+                <div class="growth-moments-list" id="journal-growth-moments-list">
+                  <!-- Highlights -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Search and List Section -->
+            <div class="journal-entries-section glass-panel">
+              <div class="journal-search-bar">
+                <input type="text" id="journal-search-input" class="glass-input" data-i18n-placeholder="journal.search" placeholder="Search your entries...">
+                <select id="journal-mood-filter" class="glass-input">
+                  <option value="all">All Moods</option>
+                  <!-- Populated by js -->
+                </select>
+                <select id="journal-topic-filter" class="glass-input">
+                  <option value="all">All Topics</option>
+                  <!-- Populated by js -->
+                </select>
+              </div>
+
+              <div class="journal-list" id="journal-entries-list">
+                <!-- Dynamic chronological log -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Script Imports -->
+  <script src="storage.js"></script>
+  <script src="i18n.js"></script>
+  <script src="quotes-database.js"></script>
+  <script src="wisdom-engine.js"></script>
+  <script src="voice-system.js"></script>
+  <script src="particles.js"></script>
+  <script src="tasks.js"></script>
+  <script src="reminders.js"></script>
+  <script src="journal.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
